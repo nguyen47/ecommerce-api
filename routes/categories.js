@@ -1,19 +1,15 @@
+const Category = require('../model/Category');
 const Joi = require('joi');
 const express = require('express');
 const router = express.Router();
 
-const categories = [
-    { id: 1, name: 'Laptop' },
-    { id: 2, name: 'PC' },
-    { id: 3, name: 'Gaming Gear' },
-];
 
-
-router.get('/', (req, res) => {
+router.get('/', async(req, res) => {
+    const categories = await Category.find();
     res.send(categories);
 });
 
-router.post('/', (req, res) => {
+router.post('/', async(req, res) => {
 
     // validateCategory return 2 properties: 1/ Error, 2/ Object
     // We can use "Destructre Object" -> { Properties returned }
@@ -24,25 +20,16 @@ router.post('/', (req, res) => {
         return;
     }
 
-    const category = {
-        id: categories.length + 1,
+    let category = new Category({
         name: req.body.name
-    };
+    });
 
-    console.log(category);
-
-    categories.push(category);
+    category = await category.save();
 
     res.send(category);
 });
 
-router.put('/:id', (req, res) => {
-
-    const category = categories.find(c => c.id === parseInt(req.params.id));
-    if (!category) {
-        res.status(404).send('Category not found !');
-        return;
-    }
+router.put('/:id', async(req, res) => {
 
     // const result = validateCategory(req.body);
     // validateCategory return 2 properties: 1/ Error, 2/ Object
@@ -54,28 +41,36 @@ router.put('/:id', (req, res) => {
         return;
     }
 
-    category.name = req.body.name;
+    // Update directly to DB
 
-    res.send(category);
+    const category = await Category.findByIdAndUpdate(req.params.id, {
+        name: req.body.name
+    }, {
+        new: true
+    })
 
-});
-
-router.delete('/:id', (req, res) => {
-    const category = categories.find(c => c.id === parseInt(req.params.id));
     if (!category) {
         res.status(404).send('Category not found !');
         return;
     }
 
-    const index = categories.indexOf(categories);
+    res.send(category);
 
-    categories.splice(index, 1);
+});
+
+router.delete('/:id', async(req, res) => {
+    const category = await Category.findByIdAndRemove(req.params.id);
+
+    if (!category) {
+        res.status(404).send('Category not found !');
+        return;
+    }
 
     res.send(category);
 });
 
-router.get('/:id', (req, res) => {
-    const category = categories.find(c => c.id === parseInt(req.params.id));
+router.get('/:id', async(req, res) => {
+    const category = await Category.findById(req.params.id);
     if (!category) {
         res.status(404).send('Category not found !');
     }
