@@ -19,7 +19,7 @@ let data = [{
 // connect mongodb
 seeder.connect('mongodb://localhost/shop', function() {
     seeder.loadModels([
-        '../model/User' // load mongoose model 
+        '../models/User' // load mongoose model 
     ]);
     seeder.clearModels(['User'], function() {
         seeder.populateModels(data, function() {
