@@ -1,34 +1,11 @@
+const User = require('../model/User');
 const Joi = require('joi');
 const express = require('express');
 const router = express.Router();
 
-const users = [{
-        id: 1,
-        email: 'test1@gmail.com',
-        name: 'Test',
-        role: 'admin'
-    },
-    {
-        id: 2,
-        email: 'test2@gmail.com',
-        name: 'Test 2',
-        role: 'admin'
-    },
-    {
-        id: 3,
-        email: 'test3@gmail.com',
-        name: 'Test 3',
-        role: 'client'
-    },
-    {
-        id: 4,
-        email: 'test4@gmail.com',
-        name: 'Test 4',
-        role: 'client'
-    },
-];
 
-router.get('/', (req, res) => {
+router.get('/', async(req, res) => {
+    const users = await User.find();
     res.send(users);
 });
 
